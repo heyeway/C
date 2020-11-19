@@ -29,7 +29,7 @@ main(int argc, char **argv)
     struct addrinfo addr_filter;
     struct addrinfo *aip = NULL;
     char addrstr[INET_ADDRSTRLEN];
-    char buffer[256] = "GET /index.php HTTP/1.1\r\n";
+    char buffer[256] = "GET /index.php HTTP/1.1\r\n\r\n\r\n";
 
     switch (argc) {
         case 1:
@@ -60,12 +60,13 @@ main(int argc, char **argv)
     connect(fd, aip->ai_addr, aip->ai_addrlen);
 
     send(fd, buffer, sizeof buffer - 1, MSG_DONTWAIT);
-    
-    sleep(1);
+   
+    sleep(3);
 
-    recv(fd, buffer, sizeof buffer - 1, MSG_DONTWAIT);
-
-    printf("%s\n", buffer);
+    memset(buffer, 0x00, sizeof buffer - 1);
+    while(recv(fd, buffer, sizeof buffer - 1, MSG_DONTWAIT) > 0) {
+        printf("%s\n", buffer);
+    }
 
     //shutdown(fd, SHUT_RDWR);
 
